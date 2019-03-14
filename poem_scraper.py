@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import re
 from time import time
+import tqdm
 
 # Url contains list of all poets on site.
 all_poets_page = requests.get('http://www.famouspoetsandpoems.com/poets.html')
