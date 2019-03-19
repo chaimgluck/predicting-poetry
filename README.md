@@ -7,3 +7,5 @@
 + Data Cleaning and Modeling, as well as an explanation of some decisions involved in this project, available in the other notebook.
 
 + I've written a blog post about this project, available on my Medium blog here: https://medium.com/towards-data-science/identifying-when-poems-were-written-with-natural-language-processing-a40ff286bcd
+
++ Upgraded scraper using PySpark and AWS EMR in spark-emr folder. 
