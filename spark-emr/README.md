@@ -17,9 +17,9 @@ With this upgraded scraper, the poem classifier dataset can be scraped using AWS
     1. Step 1:
         + Check Hadoop, Spark, and Livy.
         + Add two custom steps:
-            1.     + JAR Location: command-runner.jar
+            1.     JAR Location: command-runner.jar
                 + Arguments: `aws s3 cp s3://<your-bucket-here>/scrape-poems-pyspark.py /home/hadoop`
-            2.     + JAR Location: command-runner.jar  
+            2.     JAR Location: command-runner.jar  
                 + Arguments: `spark-submit --deploy-mode client --driver-java-options='-Dspark.yarn.app.container.log.dir=/mnt/var/log/hadoop' /home/hadoop/scrape-poems-pyspark.py <your-bucket-here>`
     2. Step 2:
         + Choose type and number of instances. I used m4.large instances - 1 Master, and 6 Core.
