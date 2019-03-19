@@ -13,7 +13,7 @@ With this upgraded scraper, the poem classifier dataset can be scraped using AWS
 
 ### Steps to Reproduce:
 + Upload `bootstrap-py-dependencies.sh` and `scrape-poems-pyspark.py` to an S3 bucket.
-+ Configure your EMR cluster - in the EMR console, select `Create cluster`, then `Go to advanced options`:
++ Configure your EMR cluster - in the EMR console, select `Create cluster`, select `Go to advanced options`, then follow the steps below to configure the application:
     1. Step 1:
         + Check Hadoop, Spark, and Livy.
         + Add two custom steps:
