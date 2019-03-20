@@ -20,9 +20,10 @@ logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:
 all_poets_page = requests.get('http://www.famouspoetsandpoems.com/poets.html')
 all_poets_page = BeautifulSoup(all_poets_page.text, 'lxml')
 
+# The following two functions grab the poets' information.
+
 def grab_poet_info(all_poets_page):
-    '''Input - page containing all poet info
-    Output - list of all poets and their info'''
+    '''Function grabs each poet's information from page containing all poets.'''
     poets = list()
     for tag in all_poets_page.findAll('td'):
         if '(' in tag.get_text():
@@ -38,6 +39,8 @@ def extract_poet_info(poet_string):
     number_of_poems = re.findall('\((.*?)\)', poet_string)[0]
     poet_years = re.findall('\((.*?)\)', poet_string)[1]
     return poet_name, number_of_poems, poet_years
+
+# The following functions are for extracting poems.
 
 def extract_poet_links(all_poets_page):
     '''Extract links to each poet's page from page which lists them all'''
@@ -55,7 +58,7 @@ def extract_poet_links(all_poets_page):
     return poet_pages
 
 def get_poems(poet_page):
-    '''Extract all links to individual poem pages from pages of poets. Takes about 4.5 minutes.'''
+    '''Extract all links to individual poem pages from pages of poets.'''
     poet_page = requests.get(poet_page)
     bib_soup = BeautifulSoup(poet_page.text, 'lxml')
 
@@ -72,12 +75,14 @@ def get_poems(poet_page):
     return poem_links
 
 def scrape_poem(url):
-    '''Extract one poem, and its poet, from its page'''
+    '''Extract one poem from its page, along with the poet name.'''
     with closing(requests.get(url, stream=True)) as resp:
         page = resp.text
     soup = BeautifulSoup(page, 'lxml')
     poem = soup.find('div', style="padding-left:14px;padding-top:20px;font-family:Arial;font-size:13px;")
+    # Turn poem into string in order to manually strip <br/> tags. Otherwise, words will be joined together.
     poem = str(poem)
+    # Sending a BeautifulSoup object from between nodes results in recursion errors. See https://stackoverflow.com/questions/52021254/maximum-recursion-depth-exceeded-multiprocessing-and-bs4 for more info.
     poem = BeautifulSoup(poem.replace('<br/>', ' ')).get_text().strip()
     for tag in soup('span'):
         if 'by' in tag.get_text():
@@ -89,12 +94,12 @@ def scrape_poem(url):
 def df_to_s3(df, bucket, filepath):
     s3_resource = boto3.resource('s3')
     csv_buffer = BytesIO()
-    df.to_csv(csv_buffer, index=False, encoding = 'utf-8')
+    df.to_csv(csv_buffer, index=False, encoding='utf-8')
     s3_resource.Object(bucket, filepath).put(Body=csv_buffer.getvalue())
 
 if __name__ == '__main__':
     sc = SparkContext(appName="PoemScraper")
-    logging.info('Scraping has commenced!')
+    logging.info('Application has commenced!')
     poets = grab_poet_info(all_poets_page)
     poets_info = map(extract_poet_info, poets)
     poets_df = pd.DataFrame(poets_info, columns=['name', 'number', 'years'])
